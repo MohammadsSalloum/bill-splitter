@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost of Living Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cost of Living Calculator</h2>
+        <div>
+            <label for="totalCost">Total Cost:</label>
+            <input type="number" id="totalCost" placeholder="Enter total cost" required>
+        </div>
+        <div id="familiesInput">
+            <h3>Family Details</h3>
+            <!-- Family input fields will be generated here -->
+        </div>
+        <button onclick="calculateCosts()">Calculate</button>
+
+        <div class="result" id="result">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        const families = [
+            { name: 'Amani', members: 6, paidAmount: 0 },
+            { name: 'Ali', members: 5, paidAmount: 0 },
+            { name: 'Safaa', members: 6, paidAmount: 0 },
+            { name: 'Sawsan', members: 2, paidAmount: 0 }
+        ];
+
+        // Generate input fields for each family
+        function generateFamilyInputs() {
+            const familiesInput = document.getElementById('familiesInput');
+            families.forEach((family, index) => {
+                const familyDiv = document.createElement('div');
+                familyDiv.innerHTML = `
+                    <h4>${family.name} Family</h4>
+                    <label>Number of Members:</label>
+                    <input type="number" id="members${index}" value="${family.members}" required>
+                    <label>Amount Paid:</label>
+                    <input type="number" id="paid${index}" placeholder="Enter amount paid" required>
+                `;
+                familiesInput.appendChild(familyDiv);
+            });
+        }
+
+        // Calculate costs for each family
+        function calculateCosts() {
+            const totalCost = parseFloat(document.getElementById('totalCost').value);
+            if (isNaN(totalCost) || totalCost <= 0) {
+                alert("Please enter a valid total cost.");
+                return;
+            }
+
+            const personCost = totalCost / 21;
+            const sharedCost = personCost / 2;
+            let resultHtml = '<h3>Results</h3>';
+
+            families.forEach((family, index) => {
+                // Update family details from input fields
+                const members = parseInt(document.getElementById(`members${index}`).value, 10);
+                const paidAmount = parseFloat(document.getElementById(`paid${index}`).value);
+
+                if (isNaN(members) || members <= 0 || isNaN(paidAmount)) {
+                    alert(`Please enter valid values for ${family.name} family.`);
+                    return;
+                }
+
+                const costAllocated = (members * personCost) + sharedCost;
+                const netAmount = paidAmount - costAllocated;
+                resultHtml += `<p><strong>${family.name} Family:</strong><br>Paid: $${paidAmount.toFixed(2)}<br>Allocated Cost: $${costAllocated.toFixed(2)}<br>`;
+                resultHtml += netAmount > 0 ? `Amount to be received: $${netAmount.toFixed(2)}` : `Amount to be paid: $${(-netAmount).toFixed(2)}`;
+                resultHtml += '</p>';
+            });
+
+            document.getElementById('result').innerHTML = resultHtml;
+        }
+
+        // Initialize the family input fields
+        generateFamilyInputs();
+    </script>
+</body>
+</html>
